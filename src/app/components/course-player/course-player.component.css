@@ -128,6 +128,18 @@ background-color: #fdf2f4;
 color: #e9888c;
 font-size: 15px;
 }
+.icon-toggle::after {
+  content: '+';
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+a[aria-expanded="true"] .icon-toggle::after {
+  content: '−';
+}
+a[aria-expanded="true"] .desktop-icon {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
 .line {
   width: 100%;
   margin: 0 auto;
