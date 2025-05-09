@@ -1,12 +1,11 @@
-
+/* nav */
 .breadcrumb-item + .breadcrumb-item::before {
   content: ">";
   padding: 0 0.5rem;
   color: #6c757d; 
 }
 
-/* Video Container */
-
+/* Video */
 #courseVideo{
   width: 100%;
   height: 450px;
@@ -20,7 +19,6 @@
   position: relative;
   overflow: hidden;
 }
-
 .video-cover {
   position: relative;
   cursor: pointer;
@@ -51,7 +49,6 @@
   color: #e64860;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
-
 .play-button:hover {
   background: #f1f1f1;
 }
@@ -64,19 +61,7 @@
   }
 }
 
-
-
-
-
-
-
-
-.progress-bar{
-  background-color: #6abd8a;
-  transition: width 1.5s ease-in-out;
-}
-
-/* Circle Icon */
+/* Icons */
 .circle-icon {
   width: 45px;
   height: 45px;
@@ -90,7 +75,31 @@
   align-items: center;
 }
 
-/* YOU Bubble */
+/* Leaderbord*/
+.leader-msg{
+  color: #5d67a1;
+}
+.leaderboard-list {
+  background-color: #f8fbfc;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+
+.leader-card {
+  height: 50px;
+  background-color: #f5f9fb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding-left: 1rem;
+  font-weight: 500;
+}
+
+/* Progress Bar */
+.progress-bar{
+  background-color: #6abd8a;
+  transition: width 1.5s ease-in-out;
+}
 .you-circle {
   width: 30px;
   height: 30px;
@@ -103,11 +112,12 @@
   font-weight: bold;
   font-size: 10px;
 }
-
 .percent{
   font-size: 10px;
   color: #6c74a8;
 }
+
+/* Cards*/
 .badge1{
   background-color: #f2faf8;
   color: #53bebf;
@@ -118,19 +128,50 @@ background-color: #fdf2f4;
 color: #e9888c;
 font-size: 15px;
 }
-/* Divider Line */
 .line {
   width: 100%;
   margin: 0 auto;
 }
 
+/*Exam*/
+.question-circle {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border: 2px solid #2e44ff;
+  color: #2e44ff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+.question-circle.active {
+  background-color: #2e44ff;
+  color: white;
+}
+.option-box {
+  border: 2px solid #e0e7ff;
+  border-radius: 12px;
+  background-color: #f8f9fc;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.option-box.selected {
+  background-color: #2e44ff;
+  color: white;
+  border-color: #2e44ff;
+}
+
+/* Comments*/
 .btn-submit{
   background-color: #41b69d;
   color: #eefaf9;
 }.comment-wrapper {
   position: relative;
 }
-
 .comment-wrapper:hover .delete-icon {
   display: block;
 }

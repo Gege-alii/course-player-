@@ -1,0 +1,538 @@
+<div class="bg-light py-4">
+  <div class="container">
+    <!-- nav -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb bg-light">
+        <li class="breadcrumb-item">Home</li>
+        <li class="breadcrumb-item">Courses</li>
+        <li class="breadcrumb-item active" aria-current="page">Course Details</li>
+      </ol>
+    </nav>
+
+    <h4 class="mb-4">Starting SEO as Your Home</h4>
+
+    <div class="row">
+      <div class="col-lg-8 mb-4">
+        <!-- Video -->
+        <div class="video-wrapper">
+          <div class="video-cover" *ngIf="!isVideoPlaying" (click)="playVideo()">
+             <img src="https://akramedu.com/wp-content/uploads/2023/03/course-45-590x430.jpg" class=" courseVideo" alt="Video Cover">
+             <div class="overlay"></div>
+            <div class="play-button">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <iframe *ngIf="isVideoPlaying"
+          id="courseVideo"
+          [src]="videoUrl"title="YouTube video player" frameborder="0"
+           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin" 
+            allowfullscreen></iframe>
+        </div>
+
+
+<!--  Icons buttons -->
+<div class="d-flex gap-3 flex-wrap my-5">
+  <div class="circle-icon " role="button" (click)="scrollToSection('curriculum')"
+    title="CourseMaterials">
+    <i class="fas fa-book-open"></i>
+  </div>
+
+  <div class="circle-icon " role="button" (click)="scrollToSection('comments')"
+    title="Comments">
+    <i class="fas fa-comments"></i>
+  </div>
+
+  <div class="circle-icon " role="button" data-bs-toggle="modal" data-bs-target="#askQuestionModal"
+    title="AskQuestion">
+    <i class="fas fa-question-circle"></i>
+  </div>
+
+  <div class="circle-icon " role="button" data-bs-toggle="modal" data-bs-target="#leaderboardModal"
+    title="Leaderboard">
+    <i class="fas fa-trophy"></i>
+  </div>
+</div>
+
+<!--  Ask a Question Modal -->
+<div class="modal fade" id="askQuestionModal" tabindex="-1" aria-labelledby="askQuestionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-sm border-0">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="askQuestionLabel">
+          <i class="fas fa-question-circle me-2"></i>اسأل سؤال
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+      </div>
+      <div class="modal-body">
+        <form (submit)="saveQuestion($event)">
+          <div class="mb-3">
+            <label for="studentQuestion" class="form-label">سؤالك</label>
+            <textarea id="studentQuestion" class="form-control" rows="4"
+              [(ngModel)]="studentQuestion" name="studentQuestion"
+              placeholder="اكتب سؤالك هنا..." required></textarea>
+          </div>
+          <div class="text-end">
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-paper-plane me-1"></i>إرسال السؤال
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-4" *ngIf="previousQuestions.length > 0">
+          <h6><i class="fas fa-history me-2 text-secondary"></i>الأسئلة السابقة:</h6>
+          <ul class="list-group small">
+            <li *ngFor="let q of previousQuestions" class="list-group-item">
+              {{ q }}
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard Modal -->
+<div class="modal fade" id="leaderboardModal" tabindex="-1" aria-labelledby="leaderboardLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow border-0 rounded-4">
+      <div class="modal-body p-4 text-center position-relative">
+
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        <h6 class="leader-msg mb-1">Course Name Shown Here</h6>
+        <h5 class="fw-bold mb-3 leader-msg fs-2">Leaderboard</h5>
+        <div class="bg-light rounded-3 p-3 mb-4 small leader-msg" style="line-height: 1.7;">
+          عظيم يا صديقي، آدائك في الكورس ده <br>
+          أفضل من <strong>%60</strong> من باقي الطلبة.. كمل عايز✊ <br>
+           أشوف اسمك في الليدر بورد هنا
+        </div>
+
+        <div class="leaderboard-list text-start">
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">🥇 %سارة حمدي - 98</div>
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">🥈 %محمد عبد الرحمن - 95</div>
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">🥉 %كريم أحمد - 92</div>
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">%4. آية مصطفى - 89</div>
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">%5. ياسر عمرو - 87</div>
+          <div class="leader-card mb-3 bg-light rounded-3 p-3">%6. ندى سامي - 85</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!--Course materials-->
+<diV id="curriculum">
+        <h1 class="mb-4">Course Materials</h1>
+        <div class="d-flex p-4 bg-light shadow-lg rounded">
+
+          <!-- Left Part -->
+          <div class="w-50 pe-5">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-clock me-2"></i>Duration:</div>
+                <div>3 weeks</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-pen-nib me-2"></i>Lessons:</div>
+                <div>8</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-user-graduate me-2"></i>Enrolled:</div>
+                <div>65 students</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-globe me-2"></i>Language:</div>
+                <div>English</div>
+              </div>
+            </div>
+            <hr class="line mt-2 mb-2" />
+          </div>
+  
+          <!-- Right Part -->
+          <div class="w-50 ps-3">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-clock me-2"></i>Duration:</div>
+                <div>3 weeks</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-pen-nib me-2"></i>Lessons:</div>
+                <div>8</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-user-graduate me-2"></i>Enrolled:</div>
+                <div>65 students</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+  
+            <div>
+              <div class="d-flex justify-content-between align-items-center">
+                <div><i class="fas fa-globe me-2"></i>Language:</div>
+                <div>English</div>
+              </div>
+              <hr class="line mt-2 mb-2" />
+            </div>
+          </div>
+        </div>
+     </diV>
+
+        <!-- Comments -->
+         <div id="comments" class="mt-5">
+        <h1 class="mb-4 mt-5">Comments</h1>
+
+        <div *ngFor="let comment of comments; let i = index; let last = last" class="comment-wrapper position-relative">
+          <div class="d-flex mb-3">
+            <img [src]="comment.image" alt="Student" class="rounded-circle me-3" width="70" height="70">
+            <div>
+              <h5 class="mb-0">{{ comment.name }}</h5>
+              <small class="text-muted">{{ comment.date }}</small>
+              <p class="mt-2 mb-1">{{ comment.text }}</p>
+            </div>
+          </div>
+          <i class="fas fa-trash delete-icon position-absolute text-danger" (click)="deleteComment(i)"></i>
+          <hr *ngIf="!last">
+        </div>
+        
+        <!-- Submit comment form -->
+        <div class="mt-5 mb-3">
+          <textarea class="form-control" [(ngModel)]="newCommentText" rows="4" placeholder="Write a comment"></textarea>
+        </div>
+        <button class="btn btn-submit" (click)="submitComment()">
+          Submit Review <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+      
+
+      <!-- Side cards -->
+      <div class="col-lg-4">
+        <p class="mb-5"><strong>Topics for This Course</strong></p>
+
+        <!-- Progress Section -->
+        <div class="position-relative mb-5">
+          <div class="progress" style="height: 5px;">
+            <div class="progress-bar" [ngStyle]="{ width: progressWidth }"></div>
+          </div>
+
+          <div class="position-absolute translate-middle-x" style="left: 75%; top: -35px;">
+            <div class="you-circle">You</div>
+          </div>
+        
+          <div class="position-absolute translate-middle-x" style="left: 75%; top: 10px;">
+            <div class="fw-bold percent">75%</div>
+          </div>
+        </div>
+        
+        <!-- Card 1 -->
+        <div class="card border mb-5">
+          <div class="card-body mt-3">
+            <h5>Week 1–4</h5>
+            <p class="text-muted">
+              Advanced storytelling techniques for writers: Personas, Characters & Plots
+            </p>
+            <hr class="line mt-3 mb-2" />
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.introduction)" style="cursor: pointer;" >
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Introduction</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+        
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Course Overview</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2"  (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Course Overview</span>
+              </div>
+              <div class="d-flex align-items-start">
+                <span class="badge badge1 mb-1 px-2">2 Questions</span>
+                <span class="badge badge2 px-2">15 Minutes</span>
+              </div>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2">
+  <a href="#" (click)="openExam($event)" class="text-decoration-none text-muted d-flex align-items-center">
+    <i class="fas fa-file-alt me-2"></i>
+    <span>Course Exercise / Reference Files</span>
+  </a>
+  <i class="fas fa-lock text-muted"></i>
+</div>
+ <hr class="line mt-2 mb-2" />
+
+ <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Code Editor Installation (Optional if you have one)</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+        <div class="d-flex justify-content-between align-items-center py-2">
+  <a href="#" (click)="openExam($event)" class="text-decoration-none text-muted d-flex align-items-center">
+    <i class="fas fa-file-alt me-2"></i>
+    <span>Embedding PHP in HTML</span>
+  </a>
+  <i class="fas fa-lock text-muted"></i>
+</div>
+ <hr class="line mt-2 mb-2" />
+
+          </div>
+        </div>
+        
+        <!-- BDF Modal -->
+        <ng-template #pdfModal let-modal>
+          <div class="modal-header">
+            <h5 class="modal-title">PDF Viewer</h5>
+            <button type="button"
+              class="btn-close"
+              aria-label="Close"
+              (click)="modal.dismiss()"
+            ></button>
+          </div>
+          <div class="modal-body p-0" style="height: 80vh;">
+            <iframe
+              [src]="sanitizedPDFUrl"
+              width="100%"
+              height="100%"
+              style="border: none;"
+            ></iframe>
+          </div>
+        </ng-template>
+        
+        
+
+        
+<!-- Card 2 -->
+        <div class="card border mb-5">
+          <div class="card-body mt-3">
+            <h5>Week 5-8</h5>
+            <p class="text-muted">Advanced story telling techniques for writers: Personas, Characters & Plots</p>
+            <hr class="line mt-3 mb-2" />
+
+<div class="d-flex justify-content-between align-items-center py-2">
+  <a href="#" (click)="openExam($event)" class="text-decoration-none text-muted d-flex align-items-center">
+    <i class="fas fa-file-alt me-2"></i>
+    <span>Defining Functions</span>
+  </a>
+  <i class="fas fa-lock text-muted"></i>
+</div>
+
+<!-- Exam Modal-->
+<div class="modal fade" id="examModal" tabindex="-1" aria-labelledby="examLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-body border-0">
+      <div class="modal-body p-0 d-flex flex-column" style="background-color: #f2f4fc; font-family: 'Poppins', sans-serif;">
+
+        <div class="d-flex align-items-center justify-content-center px-3 py-2" style="background-color: #2e44ff;">
+          <button type="button" class="btn text-white fs-5 " data-bs-dismiss="modal">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="badge bg-warning text-white px-4 py-2 rounded-pill fw-semibold text-center" style="font-size: 1rem;">
+            ⏰ {{ timerDisplay }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 py-3 bg-white">
+          <ng-container *ngFor="let q of examQuestions; let i = index">
+            <div class="question-circle" [class.active]="currentQuestionIndex === i" (click)="goToQuestion(i)">
+              {{ i + 1 }}
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Question Card -->
+        <div class="container py-4 px-3 px-md-5">
+          <form (submit)="submitExam($event)">
+            <div *ngIf="examQuestions[currentQuestionIndex] as q">
+              <div class="mb-4 bg-white p-4 rounded-4 shadow-sm">
+                <h5 class="fw-bold mb-3">{{ currentQuestionIndex + 1 }}.</h5>
+                <p class="fw-medium text-dark mb-4">{{ q.question }}</p>
+
+                <div *ngFor="let opt of q.options; let j = index" class="option-box mb-3" 
+                     [class.selected]="studentAnswers[currentQuestionIndex] === opt"
+                     (click)="selectAnswer(currentQuestionIndex, opt)">
+                  <input type="radio"
+                         class="d-none"
+                         [id]="'q' + currentQuestionIndex + '-' + j"
+                         [name]="'q' + currentQuestionIndex"
+                         [value]="opt"
+                         [(ngModel)]="studentAnswers[currentQuestionIndex]"
+                         required />
+                  <label [for]="'q' + currentQuestionIndex + '-' + j" class="w-100 h-100 m-0">
+                    {{ opt }}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="d-flex justify-content-between mt-4 px-2">
+              <button class="btn btn-outline-secondary" type="button" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0">السابق</button>
+              <button class="btn btn-outline-secondary" type="button" (click)="nextQuestion()" [disabled]="currentQuestionIndex === examQuestions.length - 1">التالي</button>
+              <button class="btn btn-primary" type="submit" *ngIf="currentQuestionIndex === examQuestions.length - 1">إرسال الامتحان</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+            <hr class="line mt-2 mb-2" />
+        
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Function Parameters</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Return Values From Functions</span>
+              </div>
+              <div class="d-flex flex-column align-items-start">
+                <span class="badge badge1 mb-1 px-2">2 Questions</span>
+                <span class="badge badge2 px-2">15 Minutes</span>
+              </div>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Global Variable and Scope</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Newer Way of creating a Constant</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Constants</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mb-4 mt-2 " />
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card border mb-5">
+          <div class="card-body mt-3">
+            <h5>Week 5-8</h5>
+            <p class="text-muted">Advanced story telling techniques for writers: Personas, Characters & Plots</p>
+            <hr class="line mt-3 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Defining Functions</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Function Parameters</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Return Values From Functions</span>
+              </div>
+              <div class="d-flex flex-column align-items-start">
+                <span class="badge badge1 mb-1 px-2">2 Questions</span>
+                <span class="badge badge2 px-2">15 Minutes</span>
+              </div>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Global Variable and Scope</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Newer Way of creating a Constant</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mt-2 mb-2" />
+
+            <div class="d-flex justify-content-between align-items-center py-2" (click)="openPDF(pdfLinks.overview1)" style="cursor: pointer;">
+              <div class="d-flex align-items-center text-muted">
+                <i class="fas fa-file-alt me-2"></i>
+                <span>Constants</span>
+              </div>
+              <i class="fas fa-lock text-muted"></i>
+            </div>
+            <hr class="line mb-4 mt-2 " />
+          </div>
+        </div>
+
+
+       
+     
