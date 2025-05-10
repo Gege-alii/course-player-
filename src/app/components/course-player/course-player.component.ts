@@ -1,8 +1,10 @@
 
-import { Component , AfterViewInit , ViewChild } from '@angular/core';
+import { Component , OnInit , ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 declare var bootstrap: any;
 
@@ -11,47 +13,25 @@ declare var bootstrap: any;
   templateUrl: './course-player.component.html',
   styleUrls: ['./course-player.component.css']
 })
-export class CoursePlayerComponent {
+export class CoursePlayerComponent implements OnInit {
 
-  constructor(private modalService: NgbModal, private sanitizer: DomSanitizer) {}
+  constructor(private modalService: NgbModal, private sanitizer: DomSanitizer, private http: HttpClient) {}
 
    progressWidth = '0%';
    isVideoPlaying = false;
    videoUrl!: SafeResourceUrl;
   
   // Comments 
-   defaultComments = [
-    {
-      image: 'https://newcpsblgr.cutm.ac.in/wp-content/uploads/2020/10/testi22de.jpg',
-      name: 'Student Name Goes Here',
-      date: 'Oct 10, 2021',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-      image: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQMCR3Q0JBAwg5LPlTnMhts7IvDhAyqNqQidxPMgAJsr17vbFst',
-      name: 'Student Name Goes Here',
-      date: 'Oct 15, 2021',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-      image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSZu5JFfEnxia1GPJJSeSM42SDZISSrwbpbyxr1uutagdLChQJ3',
-      name: 'Student Name Goes Here',
-      date: 'Oct 19, 2021',
-      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    }
-  ];
-  
   comments: any[] = [];
   newCommentText: string = '';
+  apiUrl = 'https://680a11a51f1a52874cdf07f1.mockapi.io/api/v1/comments';
   
     ngOnInit(): void {
 
       //comments
-    const stored = localStorage.getItem('comments');
-    this.comments = stored ? JSON.parse(stored) : [...this.defaultComments];
-    if (!stored) {
-      localStorage.setItem('comments', JSON.stringify(this.comments));
-    }
+      this.getComments().subscribe(comments => {
+      this.comments = comments;
+    });
 
         // Load saved question input (if any)
       const savedQuestion = localStorage.getItem('studentQuestion');
@@ -74,7 +54,6 @@ export class CoursePlayerComponent {
         this.timerInterval = null;
       }
     });
-
       const savedProgress = localStorage.getItem('examProgress');
   if (savedProgress) {
     this.studentAnswers = JSON.parse(savedProgress);
@@ -83,27 +62,52 @@ export class CoursePlayerComponent {
     }
   
     // Comments
-    addComment(comment: any): void {
-    this.comments.push(comment);
-    localStorage.setItem('comments', JSON.stringify(this.comments));
+    getComments(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
-submitComment(): void {
-    if (this.newCommentText.trim()) {
-      const newComment = {
-        image: 'https://i.pinimg.com/1200x/c5/07/8e/c5078ec7b5679976947d90e4a19e1bbb.jpg',
-        name: 'Student',
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        text: this.newCommentText.trim()
-      };
-      this.addComment(newComment);
-      this.newCommentText = ''; 
+ submitComment(): void {
+  if (this.newCommentText.trim()) {
+    const newComment = {
+      image: 'https://i.pinimg.com/1200x/c5/07/8e/c5078ec7b5679976947d90e4a19e1bbb.jpg',
+      name: 'Student Name',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      text: this.newCommentText.trim()
+    };
+    this.http.post(this.apiUrl, newComment).subscribe(() => {
+      this.getComments().subscribe(comments => {
+        this.comments = comments;
+      });
+    });
+    this.newCommentText = ''; 
+  }
+}
+
+ deleteComment(id: string): void {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Once deleted, you will not be able to recover this comment!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.http.delete(`${this.apiUrl}/${id}`).subscribe(() => {
+        this.getComments().subscribe(comments => {
+          this.comments = comments;
+        });
+        Swal.fire(
+          'Deleted!',
+          'Your comment has been deleted.',
+          'success'
+        );
+      });
     }
-  }
-  deleteComment(index: number): void {
-    this.comments.splice(index, 1);
-    localStorage.setItem('comments', JSON.stringify(this.comments));
-  }
+  });
+}
+
    
     ngAfterViewInit(): void {
       setTimeout(() => {

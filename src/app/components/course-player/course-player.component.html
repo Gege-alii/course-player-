@@ -201,31 +201,30 @@
      </diV>
 
         <!-- Comments -->
-         <div id="comments" class="mt-5">
-        <h1 class="mb-4 mt-5">Comments</h1>
-
-        <div *ngFor="let comment of comments; let i = index; let last = last" class="comment-wrapper position-relative">
-          <div class="d-flex mb-3">
-            <img [src]="comment.image" alt="Student" class="rounded-circle me-3" width="70" height="70">
-            <div>
-              <h5 class="mb-0">{{ comment.name }}</h5>
-              <small class="text-muted">{{ comment.date }}</small>
-              <p class="mt-2 mb-1">{{ comment.text }}</p>
-            </div>
-          </div>
-          <i class="fas fa-trash delete-icon position-absolute text-danger" (click)="deleteComment(i)"></i>
-          <hr *ngIf="!last">
-        </div>
-        
-        <!-- Submit comment form -->
-        <div class="mt-5 mb-3">
-          <textarea class="form-control" [(ngModel)]="newCommentText" rows="4" placeholder="Write a comment"></textarea>
-        </div>
-        <button class="btn btn-submit" (click)="submitComment()">
-          Submit Review <i class="fas fa-arrow-right ms-2"></i>
-        </button>
+      <div id="comments" class="mt-5">
+  <h1 class="mb-4 mt-5">Comments</h1>
+  <div *ngFor="let comment of comments; let i = index; let last = last" class="comment-wrapper position-relative">
+    <div class="d-flex mb-3">
+      <img [src]="comment.image" alt="Student" class="rounded-circle me-3" width="70" height="70">
+      <div>
+        <h5 class="mb-0">{{ comment.name }}</h5>
+        <small class="text-muted">{{ comment.date }}</small>
+        <p class="mt-2 mb-1">{{ comment.text }}</p>
       </div>
     </div>
+    <i class="fas fa-trash delete-icon position-absolute text-danger" (click)="deleteComment(comment.id)"></i>
+    <hr *ngIf="!last">
+  </div>
+  
+  <!-- Submit comment form-->
+  <div class="mt-5 mb-3">
+    <textarea class="form-control" [(ngModel)]="newCommentText" rows="4" placeholder="Write a comment"></textarea>
+  </div>
+  <button class="btn btn-submit" (click)="submitComment()">
+    Submit Review <i class="fas fa-arrow-right ms-2"></i>
+  </button>
+</div>
+</div>
 
       
 
@@ -333,9 +332,7 @@
     </div>
   </div>
 </div>
-
-
-        
+  
         <!-- BDF Modal -->
         <ng-template #pdfModal let-modal>
           <div class="modal-header">
