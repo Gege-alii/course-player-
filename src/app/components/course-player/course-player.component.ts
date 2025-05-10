@@ -3,6 +3,7 @@ import { Component , AfterViewInit , ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { CommentService } from '../../comment.service';
 
 declare var bootstrap: any;
 
@@ -18,41 +19,12 @@ export class CoursePlayerComponent {
    videoUrl!: SafeResourceUrl;
   
   // Comments 
-  defaultImages = [
-  'https://i.pravatar.cc/70?img=1',
-  'https://i.pravatar.cc/70?img=2',
-  'https://i.pravatar.cc/70?img=3',
-  'https://i.pravatar.cc/70?img=4',
-  'https://i.pravatar.cc/70?img=5',
-];
-  
 comments: any[] = [];
-newCommentText: string = '';
-apiUrl = 'https://jsonplaceholder.typicode.com/comments';
+  newCommentText = '';
   
-    ngOnInit(): void {
+ async   ngOnInit() {
       //comments
-  const stored = localStorage.getItem('comments');
-
-  if (stored) {
-    this.comments = JSON.parse(stored);
-  } else {
-    // Fetch from JSONPlaceholder and add random images
-    fetch(this.apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        const limited = data.slice(0, 5); // Use top 5 for demo
-        this.comments = limited.map((c: any) => ({
-          image: this.getRandomImage(),
-          name: c.name,
-          date: new Date().toLocaleDateString('en-US', {
-            month: 'short', day: 'numeric', year: 'numeric'
-          }),
-          text: c.body
-        }));
-        localStorage.setItem('comments', JSON.stringify(this.comments));
-      });
-  }
+  this.comments = await this.commentService.getComments();
   
         // Load saved question input (if any)
       const savedQuestion = localStorage.getItem('studentQuestion');
@@ -84,39 +56,26 @@ apiUrl = 'https://jsonplaceholder.typicode.com/comments';
     }
   
     // Comments
-getRandomImage(): string {
-  const index = Math.floor(Math.random() * this.defaultImages.length);
-  return this.defaultImages[index];
-}
+  async submitComment() {
+    if (!this.newCommentText.trim()) return;
 
-submitComment(): void {
-  if (this.newCommentText.trim()) {
     const newComment = {
-      image: this.getRandomImage(),
-      name: 'Visitor',
-      date: new Date().toLocaleDateString('en-US', {
-        month: 'short', day: 'numeric', year: 'numeric'
-      }),
+      image: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70 + 1),
+      name: 'Student',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       text: this.newCommentText.trim()
     };
 
     this.comments.push(newComment);
-    localStorage.setItem('comments', JSON.stringify(this.comments));
+    await this.commentService.saveComments(this.comments);
     this.newCommentText = '';
   }
-}
 
-deleteComment(index: number): void {
-  this.comments.splice(index, 1);
-  localStorage.setItem('comments', JSON.stringify(this.comments));
-}
-   
+  async deleteComment(index: number) {
+    this.comments.splice(index, 1);
+    await this.commentService.saveComments(this.comments);
+  }
 
-    ngAfterViewInit(): void {
-      setTimeout(() => {
-        this.progressWidth = '75%';
-      }, 100); 
-    }
   
     // Video 
     playVideo() {
@@ -137,7 +96,7 @@ deleteComment(index: number): void {
       overview1: '../assets/images/frontend.pdf',
     };
   
-    constructor(private modalService: NgbModal, private sanitizer: DomSanitizer) {}
+    constructor(private modalService: NgbModal, private sanitizer: DomSanitizer, private commentService: CommentService) {}
   
     openPDF(link: string): void {
       this.sanitizedPDFUrl = this.sanitizer.bypassSecurityTrustResourceUrl(link);
