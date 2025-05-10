@@ -3,7 +3,6 @@ import { Component , AfterViewInit , ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { CommentService } from '../../comment.service';
 
 declare var bootstrap: any;
 
@@ -14,18 +13,46 @@ declare var bootstrap: any;
 })
 export class CoursePlayerComponent {
 
+  constructor(private modalService: NgbModal, private sanitizer: DomSanitizer) {}
+
    progressWidth = '0%';
    isVideoPlaying = false;
    videoUrl!: SafeResourceUrl;
   
   // Comments 
-comments: any[] = [];
-  newCommentText = '';
+   defaultComments = [
+    {
+      image: 'https://newcpsblgr.cutm.ac.in/wp-content/uploads/2020/10/testi22de.jpg',
+      name: 'Student Name Goes Here',
+      date: 'Oct 10, 2021',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    },
+    {
+      image: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQMCR3Q0JBAwg5LPlTnMhts7IvDhAyqNqQidxPMgAJsr17vbFst',
+      name: 'Student Name Goes Here',
+      date: 'Oct 15, 2021',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    },
+    {
+      image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSZu5JFfEnxia1GPJJSeSM42SDZISSrwbpbyxr1uutagdLChQJ3',
+      name: 'Student Name Goes Here',
+      date: 'Oct 19, 2021',
+      text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+    }
+  ];
   
- async   ngOnInit() {
+  comments: any[] = [];
+  newCommentText: string = '';
+  
+    ngOnInit(): void {
+
       //comments
-  this.comments = await this.commentService.getComments();
-  
+    const stored = localStorage.getItem('comments');
+    this.comments = stored ? JSON.parse(stored) : [...this.defaultComments];
+    if (!stored) {
+      localStorage.setItem('comments', JSON.stringify(this.comments));
+    }
+
         // Load saved question input (if any)
       const savedQuestion = localStorage.getItem('studentQuestion');
       if (savedQuestion) {
@@ -56,26 +83,33 @@ comments: any[] = [];
     }
   
     // Comments
-  async submitComment() {
-    if (!this.newCommentText.trim()) return;
-
-    const newComment = {
-      image: 'https://i.pravatar.cc/150?img=' + Math.floor(Math.random() * 70 + 1),
-      name: 'Student',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      text: this.newCommentText.trim()
-    };
-
-    this.comments.push(newComment);
-    await this.commentService.saveComments(this.comments);
-    this.newCommentText = '';
+    addComment(comment: any): void {
+    this.comments.push(comment);
+    localStorage.setItem('comments', JSON.stringify(this.comments));
   }
 
-  async deleteComment(index: number) {
+submitComment(): void {
+    if (this.newCommentText.trim()) {
+      const newComment = {
+        image: 'https://i.pinimg.com/1200x/c5/07/8e/c5078ec7b5679976947d90e4a19e1bbb.jpg',
+        name: 'Student',
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        text: this.newCommentText.trim()
+      };
+      this.addComment(newComment);
+      this.newCommentText = ''; 
+    }
+  }
+  deleteComment(index: number): void {
     this.comments.splice(index, 1);
-    await this.commentService.saveComments(this.comments);
+    localStorage.setItem('comments', JSON.stringify(this.comments));
   }
-
+   
+    ngAfterViewInit(): void {
+      setTimeout(() => {
+        this.progressWidth = '75%';
+      }, 100); 
+    }
   
     // Video 
     playVideo() {
@@ -85,8 +119,6 @@ comments: any[] = [];
       );
     }
   
-   
-    
   // open PDF
     @ViewChild('pdfModal') pdfModal: any;
     sanitizedPDFUrl: SafeResourceUrl = '';
@@ -95,9 +127,6 @@ comments: any[] = [];
       introduction: '../assets/images/frontend.pdf',
       overview1: '../assets/images/frontend.pdf',
     };
-  
-    constructor(private modalService: NgbModal, private sanitizer: DomSanitizer, private commentService: CommentService) {}
-  
     openPDF(link: string): void {
       this.sanitizedPDFUrl = this.sanitizer.bypassSecurityTrustResourceUrl(link);
       this.modalService.open(this.pdfModal, { size: 'xl', centered: true });
@@ -118,7 +147,6 @@ comments: any[] = [];
 
     saveQuestion(event: Event): void {
       event.preventDefault();
-  
       const trimmed = this.studentQuestion.trim();
       if (trimmed) {
         this.previousQuestions.push(trimmed);
@@ -200,17 +228,14 @@ comments: any[] = [];
 
     openExam(event: Event): void {
       event.preventDefault();
-  
       const modal = new (window as any).bootstrap.Modal(document.getElementById('examModal'));
       modal.show();
-  
       this.startTimer();
     }
   
     startTimer(): void {
       this.timeLeft = 60;
       this.updateDisplay();
-  
       this.timerInterval = setInterval(() => {
         this.timeLeft--;
         this.updateDisplay();
@@ -232,18 +257,16 @@ comments: any[] = [];
       this.autoSubmitExam();
     }
   }, 1000);
-
   const examModal = new (window as any).bootstrap.Modal(document.getElementById('examModal'));
   examModal.show();
 }
 
-  
     updateDisplay(): void {
       const minutes = Math.floor(this.timeLeft / 60).toString().padStart(2, '0');
       const seconds = (this.timeLeft % 60).toString().padStart(2, '0');
       this.timerDisplay = `${minutes}:${seconds}`;
     }
-  
+
    submitExam(event: Event): void {
     event.preventDefault();
     clearInterval(this.timerInterval);
@@ -255,7 +278,6 @@ comments: any[] = [];
       html: `عدد الإجابات الصحيحة: <b>${result.correct}</b> من أصل <b>${result.total}</b>`,
       confirmButtonText: 'موافق'
     });
-  
     const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('examModal'));
     modal?.hide();
   }
@@ -269,7 +291,6 @@ comments: any[] = [];
       html: `عدد الإجابات الصحيحة: <b>${result.correct}</b> من أصل <b>${result.total}</b>`,
       confirmButtonText: 'تمام',
     });
-  
     const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('examModal'));
     modal?.hide();
   }
@@ -304,6 +325,5 @@ nextQuestion() {
 selectAnswer(qIndex: number, answer: string) {
   this.studentAnswers[qIndex] = answer;
 }
-
  
 }
