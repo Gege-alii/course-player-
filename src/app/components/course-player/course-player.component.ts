@@ -18,36 +18,40 @@ export class CoursePlayerComponent {
    videoUrl!: SafeResourceUrl;
   
   // Comments 
-    defaultComments = [
-  {
-    image: 'https://newcpsblgr.cutm.ac.in/wp-content/uploads/2020/10/testi22de.jpg',
-    name: 'Student Name Goes Here',
-    date: 'Oct 10, 2021',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-  },
-  {
-    image: 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQMCR3Q0JBAwg5LPlTnMhts7IvDhAyqNqQidxPMgAJsr17vbFst',
-    name: 'Student Name Goes Here',
-    date: 'Oct 15, 2021',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-  },
-  {
-    image: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSZu5JFfEnxia1GPJJSeSM42SDZISSrwbpbyxr1uutagdLChQJ3',
-    name: 'Student Name Goes Here',
-    date: 'Oct 19, 2021',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-  }
+  defaultImages = [
+  'https://i.pravatar.cc/70?img=1',
+  'https://i.pravatar.cc/70?img=2',
+  'https://i.pravatar.cc/70?img=3',
+  'https://i.pravatar.cc/70?img=4',
+  'https://i.pravatar.cc/70?img=5',
 ];
   
-  comments: any[] = [];
+comments: any[] = [];
 newCommentText: string = '';
+apiUrl = 'https://jsonplaceholder.typicode.com/comments';
   
     ngOnInit(): void {
       //comments
-      const stored = localStorage.getItem('comments');
-  this.comments = stored ? JSON.parse(stored) : [...this.defaultComments];
-  if (!stored) {
-    localStorage.setItem('comments', JSON.stringify(this.comments));
+  const stored = localStorage.getItem('comments');
+
+  if (stored) {
+    this.comments = JSON.parse(stored);
+  } else {
+    // Fetch from JSONPlaceholder and add random images
+    fetch(this.apiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const limited = data.slice(0, 5); // Use top 5 for demo
+        this.comments = limited.map((c: any) => ({
+          image: this.getRandomImage(),
+          name: c.name,
+          date: new Date().toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+          }),
+          text: c.body
+        }));
+        localStorage.setItem('comments', JSON.stringify(this.comments));
+      });
   }
   
         // Load saved question input (if any)
@@ -80,14 +84,22 @@ newCommentText: string = '';
     }
   
     // Comments
+getRandomImage(): string {
+  const index = Math.floor(Math.random() * this.defaultImages.length);
+  return this.defaultImages[index];
+}
+
 submitComment(): void {
   if (this.newCommentText.trim()) {
     const newComment = {
-      image: 'https://i.pinimg.com/1200x/c5/07/8e/c5078ec7b5679976947d90e4a19e1bbb.jpg',
-      name: 'Student',
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      image: this.getRandomImage(),
+      name: 'Visitor',
+      date: new Date().toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      }),
       text: this.newCommentText.trim()
     };
+
     this.comments.push(newComment);
     localStorage.setItem('comments', JSON.stringify(this.comments));
     this.newCommentText = '';
